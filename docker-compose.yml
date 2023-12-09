@@ -17,6 +17,8 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsencrypt.acme.email=christophehenry11@gmail.com"
       - "--certificatesresolvers.letsencrypt.acme.storage=/certificates/acme.json"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
     # Here we map ports from container to our host machine
     # which means that port 80 on our machine will access port 80 in traefik service
     ports:
@@ -40,8 +42,6 @@ services:
     deploy:
       labels:
         - "traefik.docker.network=traefik_webgateway"
-        - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       placement:
         constraints:
           - "node.role==manager"
@@ -49,15 +49,13 @@ services:
   coding-fighters-back:
     image: "someawesomedockerid/coding-fighters-back:latest"
     ports:
-      - target: 8000
-        published: 8000
-        mode: host
+      - "8000:8000"
     deploy:
       replicas: 1
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.traefik.rule=Host(`api.coding-fighters.tech`)"
-        - "traefik.http.services.hostname.loadbalancer.server.port=8000"
+        - "traefik.http.services.back.loadbalancer.server.port=8000"
         - "traefik.docker.network=traefik_webgateway"
         # HTTPS configuration
         - "traefik.http.routers.traefik.tls=true"
@@ -67,9 +65,29 @@ services:
     networks:
       - traefik_webgateway
 
+  coding-fighters-front:
+    image: "someawesomedockerid/coding-fighters-front:latest"
+    ports:
+      - "8001:80"
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.front.rule=Host(`coding-fighters.tech`)"
+        - "traefik.http.services.front.loadbalancer.server.port=80"
+        - "traefik.docker.network=traefik_webgateway"
+        # HTTPS configuration
+        - "traefik.http.routers.front.tls=true"
+        - "traefik.http.routers.front.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.front.entrypoints=websecure"
+    restart: on-failure
+    networks:
+      - traefik_webgateway
+
 networks:
   traefik_webgateway:
     name: traefik_webgateway
+    attachable: true
     external: true
 
 # Explicitly define docker volume which stores certificates

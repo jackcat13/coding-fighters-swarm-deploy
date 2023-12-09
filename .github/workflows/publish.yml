@@ -1,0 +1,41 @@
+on:
+  push:
+    branches:
+      - main
+
+name: Send deployment
+
+jobs:
+  upload-config:
+    name: "Send the deployment config to the remote host"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v2
+
+      - name: "copy deploy config"
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: docker-compose.yml
+          remote: docker-compose.yml
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+
+  deploy:
+    name: "Automatic platform execution"
+    needs: upload-config
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v2
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            docker service rm $(docker service ls -q)
+            docker stack deploy -c docker-compose.yml coding-fighters
