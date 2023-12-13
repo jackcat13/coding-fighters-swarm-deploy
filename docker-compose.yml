@@ -48,6 +48,8 @@ services:
 
   coding-fighters-back:
     image: "someawesomedockerid/coding-fighters-back:latest"
+    environment:
+      - MONGO_URI=${MONGO_URI}
     ports:
       - "8000:8000"
     deploy:
