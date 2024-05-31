@@ -2,7 +2,7 @@ version: "3"
 services:
 
   traefik:
-    image: "traefik:latest"
+    image: "traefik:2.11.3"
     # Commands listed below determine configuration of our traefik instance
     command:
       - "--api.insecure=true"
