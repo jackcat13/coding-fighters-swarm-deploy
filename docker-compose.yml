@@ -1,6 +1,5 @@
 version: "3"
 services:
-
   traefik:
     image: "traefik:2.11.3"
     # Commands listed below determine configuration of our traefik instance
@@ -46,6 +45,34 @@ services:
         constraints:
           - "node.role==manager"
 
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    command: mongod --bind_ip_all
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - internal
+    depends_on:
+      - mongodb
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      endpoint_mode: dnsrr
+    labels:
+      - "traefik.docker.network=internal"
+
+  test-container:
+    image: alpine:latest
+    command: tail -f /dev/null
+    networks:
+      - internal
+    deploy:
+      placement:
+        constraints:
+          - "node.role==manager"
+
   coding-fighters-back:
     image: "someawesomedockerid/coding-fighters-back:latest"
     env_file: docker.env
@@ -65,6 +92,7 @@ services:
     restart: on-failure
     networks:
       - traefik_webgateway
+      - internal
 
   coding-fighters-front:
     image: "someawesomedockerid/coding-fighters-front:latest"
@@ -91,7 +119,13 @@ networks:
     name: traefik_webgateway
     attachable: true
     external: true
+  internal:
+    name: internal
+    attachable: true
+    external: true
+    driver: overlay
 
 # Explicitly define docker volume which stores certificates
 volumes:
+  mongo_data:
   traefik-public-certificates-volume:
