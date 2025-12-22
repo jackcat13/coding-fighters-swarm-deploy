@@ -43,8 +43,8 @@ jobs:
       - name: "copy deploy loki config"
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: loki/loki.yaml
-          remote: loki/loki.yaml
+          local: loki/loki.yml
+          remote: loki/loki.yml
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
@@ -52,8 +52,8 @@ jobs:
       - name: "copy deploy promtail config"
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: promtail/promtail.yaml
-          remote: promtail/promtail.yaml
+          local: promtail/promtail.yml
+          remote: promtail/promtail.yml
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
