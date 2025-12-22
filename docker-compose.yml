@@ -128,7 +128,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.role==manager
+          - node.role == manager
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.grafana.rule=PathPrefix(`/analytics`)"
@@ -151,7 +151,9 @@ services:
       - "--storage.tsdb.path=/prometheus"
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.listen-address=:9090"
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           - node.role == manager

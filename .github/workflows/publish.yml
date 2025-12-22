@@ -31,6 +31,15 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
 
+      - name: "copy deploy grafana config"
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: grafana/provisioning/datasources/prometheus.yml
+          remote: grafana/provisioning/datasources/prometheus.yml
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+
   deploy:
     name: "Automatic platform execution"
     needs: upload-config
