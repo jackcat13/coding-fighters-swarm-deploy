@@ -139,6 +139,51 @@ services:
         - "traefik.http.routers.grafana.entrypoints=websecure"
     restart: on-failure
 
+  prometheus:
+    image: prom/prometheus:v2.37.1
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - traefik-webgateway
+
+  node-exporter:
+    image: prom/node-exporter:v1.3.1
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    deploy:
+      mode: global
+    networks:
+      - traefik-webgateway
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.45.0
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    deploy:
+      mode: global
+    networks:
+      - traefik-webgateway
+
 networks:
   traefik_webgateway:
     name: traefik_webgateway
@@ -155,3 +200,4 @@ volumes:
   mongo_data:
   traefik-public-certificates-volume:
   grafana_data:
+  prometheus_data:
