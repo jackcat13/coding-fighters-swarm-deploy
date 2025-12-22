@@ -114,6 +114,31 @@ services:
     networks:
       - traefik_webgateway
 
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - traefik_webgateway
+    environment:
+      - GF_SERVER_ROOT_URL=https://coding-fighters.tech/analytics
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.grafana.rule=PathPrefix(`/analytics`)"
+        - "traefik.http.routers.priority=2"
+        - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+        - "traefik.docker.network=traefik_webgateway"
+        # HTTPS configuration
+        - "traefik.http.routers.grafana.tls=true"
+        - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.grafana.entrypoints=websecure"
+    restart: on-failure
+
 networks:
   traefik_webgateway:
     name: traefik_webgateway
@@ -129,3 +154,4 @@ networks:
 volumes:
   mongo_data:
   traefik-public-certificates-volume:
+  grafana_data:
