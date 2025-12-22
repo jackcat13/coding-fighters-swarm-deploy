@@ -118,8 +118,10 @@ services:
     image: grafana/grafana:latest
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
     networks:
       - traefik_webgateway
+      - monitoring
     environment:
       - GF_SERVER_ROOT_URL=https://coding-fighters.tech/analytics
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
