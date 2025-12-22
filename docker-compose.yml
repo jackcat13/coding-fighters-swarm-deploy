@@ -154,7 +154,7 @@ services:
         constraints:
           - node.role == manager
     networks:
-      - traefik-webgateway
+      - traefik_webgateway
 
   node-exporter:
     image: prom/node-exporter:v1.3.1
@@ -169,7 +169,7 @@ services:
     deploy:
       mode: global
     networks:
-      - traefik-webgateway
+      - traefik_webgateway
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.45.0
@@ -182,7 +182,7 @@ services:
     deploy:
       mode: global
     networks:
-      - traefik-webgateway
+      - traefik_webgateway
 
 networks:
   traefik_webgateway:
