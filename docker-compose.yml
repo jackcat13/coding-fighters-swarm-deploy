@@ -140,7 +140,7 @@ services:
     restart: on-failure
 
   prometheus:
-    image: prom/prometheus:v2.37.1
+    image: prom/prometheus:latest
     volumes:
       - ./prometheus:/etc/prometheus
       - prometheus_data:/prometheus
@@ -154,10 +154,10 @@ services:
         constraints:
           - node.role == manager
     networks:
-      - traefik_webgateway
+      - monitoring
 
   node-exporter:
-    image: prom/node-exporter:v1.3.1
+    image: prom/node-exporter:latest
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -169,10 +169,10 @@ services:
     deploy:
       mode: global
     networks:
-      - traefik_webgateway
+      - monitoring
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.45.0
+    image: gcr.io/cadvisor/cadvisor:latest
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -182,7 +182,9 @@ services:
     deploy:
       mode: global
     networks:
-      - traefik_webgateway
+      - monitoring
+    command:
+      - "--docker_only=true"
 
 networks:
   traefik_webgateway:
@@ -194,6 +196,9 @@ networks:
     attachable: true
     external: true
     driver: overlay
+  monitoring:
+    driver: overlay
+    attachable: true
 
 # Explicitly define docker volume which stores certificates
 volumes:

@@ -1,3 +1,6 @@
+global:
+  scrape_interval: 15s
+
 scrape_configs:
   - job_name: "prometheus"
     static_configs:
@@ -5,12 +8,12 @@ scrape_configs:
   - job_name: "node-exporter"
     dns_sd_configs:
       - names:
-          - "tasks.monitoring_node-exporter"
+          - "tasks.coding-fighters_node-exporter"
         type: "A"
         port: 9100
   - job_name: "cadvisor"
     dns_sd_configs:
       - names:
-          - "tasks.monitoring_cadvisor"
+          - "tasks.coding-fighters_cadvisor"
         type: "A"
         port: 8080
