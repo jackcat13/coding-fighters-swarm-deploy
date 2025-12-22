@@ -22,6 +22,15 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
 
+      - name: "copy deploy prometheus config"
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: prometheus/prometheus.yml
+          remote: prometheus/prometheus.yml
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+
   deploy:
     name: "Automatic platform execution"
     needs: upload-config
