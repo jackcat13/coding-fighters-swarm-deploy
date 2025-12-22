@@ -193,29 +193,33 @@ services:
   loki:
     image: grafana/loki:latest
     command:
-      - "-config.file=/etc/loki/local-config.yaml"
+      - "-config.file=/etc/loki/loki.yml"
     volumes:
       - loki_data:/loki
-      - ./loki/config.yaml:/etc/loki/local-config.yaml
+      - ./loki/loki.yaml:/etc/loki/loki.yml
     networks:
-      - monitoring
+      monitoring:
+        aliases:
+          - loki
     deploy:
       placement:
         constraints:
           - node.role == manager
+    restart: on-failure
 
   promtail:
     image: grafana/promtail:latest
     volumes:
       - /var/log:/var/log:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /etc/promtail:/etc/promtail
+      - ./promtail/config.yaml:/etc/promtail/promtail.yml
     command:
-      - "-config.file=/etc/promtail/config.yaml"
+      - "-config.file=/etc/promtail/promtail.yml"
     networks:
       - monitoring
     deploy:
       mode: global
+    restart: on-failure
 
 networks:
   traefik_webgateway:

@@ -40,6 +40,24 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
 
+      - name: "copy deploy loki config"
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: loki/loki-config.yaml
+          remote: loki/loki-config.yaml
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+
+      - name: "copy deploy promtail config"
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: promtail/promtail-config.yaml
+          remote: promtail/promtail-config.yaml
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+
   deploy:
     name: "Automatic platform execution"
     needs: upload-config
