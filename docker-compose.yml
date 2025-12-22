@@ -86,7 +86,7 @@ services:
     ports:
       - "8000:8000"
     deploy:
-      replicas: 1
+      replicas: 5
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.traefik.rule=Host(`api.coding-fighters.tech`)"
@@ -107,7 +107,7 @@ services:
     ports:
       - "8001:80"
     deploy:
-      replicas: 1
+      replicas: 5
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.front.rule=Host(`coding-fighters.tech`)"
