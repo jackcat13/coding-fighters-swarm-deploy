@@ -92,6 +92,9 @@ services:
       placement:
         constraints:
           - node.role == manager
+      endpoint_mode: dnsrr
+    labels:
+      - "traefik.docker.network=internal"
 
   invoicer:
     image: "someawesomedockerid/invoicer:latest"
