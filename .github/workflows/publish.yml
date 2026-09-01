@@ -75,5 +75,7 @@ jobs:
           script: |
             echo "MONGO_URI=${{ secrets.MONGO_URI }}" > docker.env
             echo "GAME_API=${{ secrets.GAME_API }}" >> docker.env
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            docker pull someawesomedockerid/invoicer:latest
             docker service rm $(docker service ls -q)
             docker stack deploy -c docker-compose.yml coding-fighters
