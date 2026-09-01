@@ -85,7 +85,7 @@ services:
       POSTGRES_USER: invoicer
       POSTGRES_PASSWORD: invoicer
     volumes:
-      - postgresql_data:/var/lib/postgresql/data
+      - postgresql_data:/var/lib/postgresql
     networks:
       - internal
     deploy:
