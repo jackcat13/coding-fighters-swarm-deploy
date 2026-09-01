@@ -60,8 +60,6 @@ services:
       - mongo_data:/data/db
     networks:
       - internal
-    depends_on:
-      - mongodb
     deploy:
       placement:
         constraints:
@@ -79,6 +77,40 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+
+  postgresql:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: invoicer
+      POSTGRES_USER: invoicer
+      POSTGRES_PASSWORD: invoicer
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  invoicer:
+    image: "someawesomedockerid/invoicer:latest"
+    ports:
+      - "8002:8000"
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.invoicer.rule=Host(`invoicer.coding-fighters.tech`)"
+        - "traefik.http.services.invoicer.loadbalancer.server.port=8000"
+        - "traefik.docker.network=traefik_webgateway"
+        - "traefik.http.routers.invoicer.tls=true"
+        - "traefik.http.routers.invoicer.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.invoicer.entrypoints=websecure"
+    restart: on-failure
+    networks:
+      - traefik_webgateway
+      - internal
 
   coding-fighters-back:
     image: "someawesomedockerid/coding-fighters-back:latest"
@@ -244,6 +276,7 @@ networks:
 # Explicitly define docker volume which stores certificates
 volumes:
   mongo_data:
+  postgresql_data:
   traefik-public-certificates-volume:
   grafana_data:
   prometheus_data:
