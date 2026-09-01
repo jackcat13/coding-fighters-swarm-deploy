@@ -100,13 +100,13 @@ services:
     image: "someawesomedockerid/invoicer:latest"
     env_file: docker.env
     ports:
-      - "8002:8000"
+      - "8002:3000"
     deploy:
       replicas: 1
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.invoicer.rule=Host(`invoicer.coding-fighters.tech`)"
-        - "traefik.http.services.invoicer.loadbalancer.server.port=8000"
+        - "traefik.http.services.invoicer.loadbalancer.server.port=3000"
         - "traefik.docker.network=traefik_webgateway"
         - "traefik.http.routers.invoicer.tls=true"
         - "traefik.http.routers.invoicer.tls.certresolver=letsencrypt"
