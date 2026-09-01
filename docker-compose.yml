@@ -95,6 +95,7 @@ services:
 
   invoicer:
     image: "someawesomedockerid/invoicer:latest"
+    env_file: docker.env
     ports:
       - "8002:8000"
     deploy:
