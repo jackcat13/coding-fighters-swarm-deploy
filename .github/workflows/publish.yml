@@ -82,7 +82,19 @@ jobs:
             docker pull someawesomedockerid/invoicer:latest
             docker service rm $(docker service ls -q)
             docker stack deploy -c docker-compose.yml coding-fighters
-            until INVOICER_CONTAINER=$(docker ps --filter "label=com.docker.swarm.service.name=coding-fighters_invoicer" --filter "status=running" -q | head -n 1) && [ -n "$INVOICER_CONTAINER" ]; do
+            while true; do
+              INVOICER_CONTAINER=$(docker ps --filter "label=com.docker.swarm.service.name=coding-fighters_invoicer" --filter "status=running" -q | head -n 1)
+              if [ -z "$INVOICER_CONTAINER" ]; then
+                sleep 2
+                continue
+              fi
+
+              if docker exec "$INVOICER_CONTAINER" invoicer migrate; then
+                break
+              fi
+
+              if docker inspect --format '{{.State.Running}}' "$INVOICER_CONTAINER" 2>/dev/null | grep -q true; then
+                exit 1
+              fi
               sleep 2
             done
-            docker exec "$INVOICER_CONTAINER" invoicer migrate
