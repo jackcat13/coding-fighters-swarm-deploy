@@ -102,7 +102,7 @@ services:
     ports:
       - "8002:3000"
     deploy:
-      replicas: 1
+      replicas: 5
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.invoicer.rule=Host(`invoicer.coding-fighters.tech`)"
